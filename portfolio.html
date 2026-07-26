@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio - LEXLAND TECHNOLOGIES LIMITED</title>
+    <link rel="stylesheet" href="Style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Translation Data and Logic -->
+    <script src="translations.js"></script>
+    <script>
+      (function() {
+        const theme = localStorage.getItem('theme');
+        if (theme === 'light') document.documentElement.classList.add('light-theme');
+      })();
+    </script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script>
+      tailwind.config = { theme: { extend: { colors: { brand: '#00b8ad' } } } }
+    </script>
+</head>
+<body class="bg-[#0c0f1a]">
+
+<!-- NAV -->
+<nav x-data="{ 
+    mobileMenuOpen: false,
+    currentLang: localStorage.getItem('lang') || 'English',
+    isLight: localStorage.getItem('theme') === 'light'
+  }"
+  x-init="$watch('isLight', val => { document.documentElement.classList.toggle('light-theme', val); localStorage.setItem('theme', val ? 'light' : 'dark'); }); document.documentElement.classList.toggle('light-theme', isLight); $nextTick(() => translatePage(currentLang))"
+  x-init="
+    document.documentElement.classList.toggle('light-theme', isLight);
+    translatePage(currentLang);
+    $watch('currentLang', val => translatePage(val));"
+  class="fixed top-0 w-full z-50 bg-[#0c0f1a]/90 backdrop-blur-md border-b border-white/10 transition-all duration-300">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="flex justify-between items-center h-20 gap-x-4 md:gap-x-10">
+      <a href="Index.html" class="flex flex-col leading-tight flex-shrink-0 group">
+        <span class="text-xl font-extrabold text-white tracking-tighter">
+          LEX<span class="text-brand">LAND</span>
+        </span>
+        <span class="text-[10px] font-bold text-brand tracking-[0.15em] uppercase transition-colors group-hover:text-white">
+          Technologies Limited
+        </span>
+      </a>
+      <div class="hidden md:flex items-center space-x-10">
+        <a href="Index.html" data-i18n="nav_home" class="text-gray-300 hover:text-brand font-medium transition-colors">Home</a>
+        <a href="About.html" data-i18n="nav_about" class="text-gray-300 hover:text-brand font-medium transition-colors">About</a>
+        <a href="Services.html" data-i18n="nav_services" class="text-gray-300 hover:text-brand font-medium transition-colors">Services</a>
+        <a href="Portfolio.html" data-i18n="nav_portfolio" class="text-brand font-medium transition-colors">Portfolio</a>
+
+        <!-- Language Selector Desktop -->
+        <div class="relative" x-data="{ langOpen: false }">
+          <button @click="langOpen = !langOpen" @click.away="langOpen = false" 
+                  class="text-gray-300 hover:text-brand transition-colors p-2 flex items-center gap-2 text-sm font-medium">
+            <span x-text="currentLang === 'English' ? '🇺🇸' : currentLang === 'Spanish' ? '🇪🇸' : currentLang === 'French' ? '🇫🇷' : '🇩🇪'"></span>
+            <span x-text="currentLang" class="hidden lg:inline"></span>
+            <svg class="w-4 h-4 transition-transform" :class="langOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+          </button>
+          <div x-show="langOpen" 
+               x-transition:enter="transition ease-out duration-100"
+               x-transition:enter-start="opacity-0 scale-95"
+               x-transition:enter-end="opacity-100 scale-100"
+               class="absolute right-0 mt-2 w-36 bg-[#0c0f1a] border border-white/10 rounded-xl shadow-xl overflow-hidden z-50">
+            <template x-for="lang in ['English', 'Spanish', 'French', 'German']">
+              <button @click="currentLang = lang; translatePage(lang); langOpen = false" 
+                      class="w-full text-left px-4 py-2.5 text-xs text-gray-300 hover:bg-brand/10 hover:text-brand flex items-center gap-2 transition-colors">
+                <span x-text="lang === 'English' ? '🇺🇸' : lang === 'Spanish' ? '🇪🇸' : lang === 'French' ? '🇫🇷' : '🇩🇪'"></span>
+                <span x-text="lang"></span>
+              </button>
+            </template>
+          </div>
+        </div>
+        
+        <!-- Theme Toggle Desktop -->
+        <button type="button" @click="isLight = !isLight" 
+                class="text-gray-300 hover:text-brand transition-colors p-2 flex items-center" 
+                title="Toggle Light/Dark Theme">
+          <svg x-show="!isLight" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+          <svg x-show="isLight" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+        </button>
+
+        <a href="Contact.html" data-i18n="nav_get_started" class="bg-brand text-[#0c0f1a] px-6 py-2.5 rounded-full font-bold transition-all btn-pulse">Get Started</a>
+      </div>
+      <div class="flex items-center md:hidden gap-2">
+        <button type="button" @click="isLight = !isLight" 
+                class="text-gray-300 p-2 min-w-[44px] min-h-[44px] flex items-center justify-center">
+          <svg x-show="!isLight" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+          <svg x-show="isLight" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+        </button>
+        <button @click="mobileMenuOpen = !mobileMenuOpen" class="text-gray-300 focus:outline-none p-2 min-w-[44px] min-h-[44px] flex items-center justify-center">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path x-show="!mobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          <path x-show="mobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div x-show="mobileMenuOpen" 
+       x-transition:enter="transition ease-out duration-200"
+       x-transition:enter-start="opacity-0 -translate-y-4"
+       x-transition:enter-end="opacity-100 translate-y-0"
+       class="md:hidden bg-[#0c0f1a]/95 backdrop-blur-md border-b border-white/10 px-8 py-10 space-y-8 overflow-y-auto max-h-[calc(100vh-80px)]">
+    <a href="Index.html" @click="mobileMenuOpen = false" data-i18n="nav_home" class="block text-2xl text-gray-300 hover:text-brand">Home</a>
+    <a href="About.html" @click="mobileMenuOpen = false" data-i18n="nav_about" class="block text-2xl text-gray-300 hover:text-brand">About</a>
+    <a href="Services.html" @click="mobileMenuOpen = false" data-i18n="nav_services" class="block text-2xl text-gray-300 hover:text-brand">Services</a>
+    <a href="Portfolio.html" @click="mobileMenuOpen = false" data-i18n="nav_portfolio" class="block text-2xl text-brand">Portfolio</a>
+
+    <!-- Language Selection Mobile -->
+    <div class="pt-4 border-t border-white/10">
+      <p class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.15em] mb-4">Language</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <template x-for="lang in ['English', 'Spanish', 'French', 'German']">
+          <button @click="currentLang = lang; translatePage(lang)" 
+                  :class="currentLang === lang ? 'border-brand text-brand bg-brand/5' : 'border-white/10 text-gray-400'"
+                  class="flex items-center justify-center gap-2 px-3 py-2.5 border rounded-xl text-xs font-bold transition-all">
+            <span x-text="lang === 'English' ? '🇺🇸' : lang === 'Spanish' ? '🇪🇸' : lang === 'French' ? '🇫🇷' : '🇩🇪'"></span>
+            <span x-text="lang"></span>
+          </button>
+        </template>
+      </div>
+    </div>
+
+    <a href="Contact.html" @click="mobileMenuOpen = false" data-i18n="nav_get_started" class="block bg-brand text-[#0c0f1a] px-8 py-5 rounded-xl font-bold text-center text-lg btn-pulse">Get Started</a>
+  </div>
+</nav>
+
+<section id="portfolio" class="pt-32 pb-24">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="portfolio-head reveal text-center mb-16">
+      <span class="section-label" data-i18n="portfolio_label">Our Work</span>
+      <h2 class="section-h2" data-i18n="portfolio_title">Recent <em>Projects</em></h2>
+      <p class="section-p mx-auto" data-i18n="portfolio_sub">A selection of our latest work across web development, branding, and digital solutions.</p>
+    </div>
+    <div class="portfolio-grid">
+      <a href="https://mabs-deli-kitchens-fast-food-com.netlify.app" target="_blank" class="port-card reveal block">
+        <div class="port-thumb pt-2">🚀</div>
+        <div class="port-body">
+          <div class="port-title">Mabs Deli Kitchens</div>
+          <div class="port-tag">Web Application · Fast Food</div>
+        </div>
+      </a>
+      <a href="https://orbunde-scholars-academy-aliade.netlify.app" target="_blank" class="port-card reveal block">
+        <div class="port-thumb pt-2">🏢</div>
+        <div class="port-body">
+          <div class="port-title">Orbunde Scholars Academy</div>
+          <div class="port-tag">School Website · Portal</div>
+        </div>
+      </a>
+      <a href="https://st-chrysostom-schools-lagos.netlify.app" target="_blank" class="port-card reveal block">
+        <div class="port-thumb pt-2">🏫</div>
+        <div class="port-body">
+          <div class="port-title" data-i18n="port_chrysostom_title">St. Chrysostom Schools</div>
+          <div class="port-tag" data-i18n="port_chrysostom_tag">School Website · Lagos</div>
+        </div>
+      </a>
+      <a href="https://maps.app.goo.gl/7dLCxJY9XtdeZMuu7?g_st=aw" target="_blank" class="port-card reveal block">
+        <div class="port-thumb pt-2">📍</div>
+        <div class="port-body">
+          <div class="port-title">Orbunde Scholars Academy</div>
+          <div class="port-tag">Google Maps · SEO</div>
+        </div>
+      </a>
+      <a href="https://share.google/56S6DKMe2AYWBtlA8" target="_blank" class="port-card reveal block">
+        <div class="port-thumb pt-2">📍</div>
+        <div class="port-body">
+          <div class="port-title">Brainz Enterprises</div>
+          <div class="port-tag">Google Maps · SEO</div>
+        </div>
+      </a>
+      <a href="https://main.d12ofmhfddk7hp.amplifyapp.com/" target="_blank" class="port-card reveal block">
+        <div class="port-thumb pt-2">💻</div>
+        <div class="port-body">
+          <div class="port-title">NACC Portal</div>
+          <div class="port-tag">Web Portal · Education</div>
+        </div>
+      </a>
+      <a href="https://st-chrysostom-schools-lagos.netlify.app" target="_blank" class="port-card reveal block">
+        <div class="port-thumb pt-2">🏫</div>
+        <div class="port-body">
+          <div class="port-title" data-i18n="port_chrysostom_title">St. Chrysostom Schools</div>
+          <div class="port-tag" data-i18n="port_chrysostom_tag">School Website · Lagos</div>
+        </div>
+      </a>
+      <a href="https://share.google/STxbhiTvc5XueAFsa" target="_blank" class="port-card reveal block">
+        <div class="port-thumb pt-2">📍</div>
+        <div class="port-body">
+          <div class="port-title">NACC Lagos</div>
+          <div class="port-tag">Google Maps · SEO</div>
+        </div>
+      </a>
+      <a href="https://lifegatechristiancenter.netlify.app/" target="_blank" class="port-card reveal block">
+        <div class="port-thumb pt-2">⛪</div>
+        <div class="port-body">
+          <div class="port-title">Lifegate Christian Center</div>
+          <div class="port-tag">Church Website · Ministry</div>
+        </div>
+      </a>
+      <a href="https://share.google/L398tz4fvwqFZHNqH" target="_blank" class="port-card reveal block">
+        <div class="port-thumb pt-2">📍</div>
+        <div class="port-body">
+          <div class="port-title">AVF Calador SL</div>
+          <div class="port-tag">Google Maps · SEO</div>
+        </div>
+      </a>
+      <a href="https://www.avf-calador.com" target="_blank" class="port-card reveal block">
+        <div class="port-thumb pt-2">🌐</div>
+        <div class="port-body">
+          <div class="port-title">AVF Calador SL</div>
+          <div class="port-tag">Business Website · Spain</div>
+        </div>
+      </a>
+    </div>
+</section>
+
+<footer class="bg-[#0c0f1a] border-t border-white/10 pt-20 pb-10">
+  <div class="footer-grid max-w-7xl mx-auto px-6">
+    <div class="footer-brand">
+      <a href="Index.html" class="flex flex-col leading-tight flex-shrink-0 group">
+        <span class="text-xl font-extrabold text-white tracking-tighter">LEX<span class="text-brand">LAND</span></span>
+        <span class="text-[10px] font-bold text-brand tracking-[0.15em] uppercase transition-colors group-hover:text-white" data-i18n="footer_brand_sub">Technologies Limited</span>
+      </a>
+      <p data-i18n="footer_desc">Building smart digital solutions for modern businesses across Nigeria and beyond.</p>
+      <div class="footer-social">
+        <a class="social-btn !text-[#1877F2] !border-[#1877F2]/30 hover:!bg-[#1877F2]/10" href="https://facebook.com" title="Facebook">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+        </a>
+        <a class="social-btn !text-[#E4405F] !border-[#E4405F]/30 hover:!bg-[#E4405F]/10" href="#" title="Instagram">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+        </a>
+        <a class="social-btn !text-[#0A66C2] !border-[#0A66C2]/30 hover:!bg-[#0A66C2]/10" href="#" title="LinkedIn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+        </a>
+        <a class="social-btn !text-[#25D366] !border-[#25D366]/30 hover:!bg-[#25D366]/10" href="https://wa.me/2348135555877" title="WhatsApp">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+        </a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4 data-i18n="footer_quick_links">Quick Links</h4>
+      <ul>
+        <li><a href="Index.html" data-i18n="nav_home">Home</a></li>
+        <li><a href="About.html" data-i18n="nav_about">About</a></li>
+        <li><a href="Services.html" data-i18n="nav_services">Services</a></li>
+        <li><a href="Portfolio.html" data-i18n="nav_portfolio">Portfolio</a></li>
+        <li><a href="Contact.html" data-i18n="nav_contact">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4 data-i18n="footer_services">Services</h4>
+      <ul>
+        <li><a href="Services.html" data-i18n="svc_web_title">Website Development</a></li>
+        <li><a href="Services.html" data-i18n="svc_landing_title">Landing Pages</a></li>
+        <li><a href="Services.html" data-i18n="svc_graphics_title">Graphics Design</a></li>
+        <li><a href="Services.html" data-i18n="svc_software_title">Software Development</a></li>
+        <li><a href="Services.html" data-i18n="svc_ai_title">AI Solutions</a></li>
+        <li><a href="Services.html" data-i18n="svc_cyber_title">Cyber Security</a></li>
+        <li><a href="Services.html" data-i18n="svc_gmb_title">Google Business Profile and Optimisation</a></li>
+        <li><a href="Services.html" data-i18n="svc_tech_support_title">Technical Support</a></li>
+        <li><a href="Services.html" data-i18n="svc_mobile_support_title">Android OS and iOS Support</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 <span class="text-red-600 font-bold">Lexland Technologies Limited (CAC Registration Number: 9491027)</span>. All rights reserved.</p>
+    <p>Developed by <span class="text-red-600 font-bold">JOJI ALEXIS AONDONA</span> in <a href="#">Benue, Nigeria</a></p>
+  </div>
+</footer>
+
+<a class="wa-float" href="https://wa.me/2348135555877" target="_blank" title="Chat on WhatsApp">
+  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="white">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+  <span class="wa-badge">1</span>
+</a>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEXLAND TECHNOLOGIES LIMITED</title>
+    <meta name="google-site-verification" content="googleabb8eaf5dcc2a7c0"/>
+    <link rel="stylesheet" href="Style.css">
+    <!-- Tailwind CSS: Utility-first styling framework -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Translation Data and Logic -->
+    <script src="translations.js"></script>
+    <!-- Alpine.js: Lightweight framework for reactive UI logic -->
+    <script>
+      (function() {
+        const theme = localStorage.getItem('theme');
+        if (theme === 'light') document.documentElement.classList.add('light-theme');
+      })();
+    </script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: { brand: '#00b8ad' }
+          }
+        }
+      }
+    </script>
+</head>
+<body>
+
+<!-- NAV -->
+<nav x-data="{ 
+    mobileMenuOpen: false, 
+    isLight: localStorage.getItem('theme') === 'light',
+    currentLang: localStorage.getItem('lang') || 'English'
+  }"
+  x-init="
+    $watch('isLight', val => { document.documentElement.classList.toggle('light-theme', val); localStorage.setItem('theme', val ? 'light' : 'dark'); });
+    $watch('currentLang', val => translatePage(val));
+    translatePage(currentLang);
+    window.addEventListener('storage', e => {
+      if (e.key === 'theme') isLight = (e.newValue === 'light');
+      if (e.key === 'lang') currentLang = e.newValue;
+    });"
+  class="fixed top-0 w-full z-50 bg-[#0c0f1a]/90 backdrop-blur-md border-b border-white/10 transition-all duration-300">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="flex justify-between items-center h-20 gap-x-4 md:gap-x-10">
+      <!-- Logo -->
+      <a href="index.html" class="flex flex-col leading-tight flex-shrink-0 group">
+        <span class="text-xl font-extrabold text-white tracking-tighter">
+          LEX<span class="text-brand">LAND</span>
+        </span>
+        <span class="text-[10px] font-bold text-brand tracking-[0.15em] uppercase transition-colors group-hover:text-white" data-i18n="footer_brand_sub">
+          Technologies Limited
+        </span>
+      </a>
+
+      <!-- Desktop Navigation -->
+      <div class="hidden md:flex items-center space-x-10">
+        <a href="index.html" class="text-brand font-medium transition-colors" data-i18n="nav_home">Home</a>
+        <a href="about.html" class="text-gray-300 hover:text-brand font-medium transition-colors" data-i18n="nav_about">About</a>
+        <a href="services.html" class="text-gray-300 hover:text-brand font-medium transition-colors" data-i18n="nav_services">Services</a>
+        <a href="portfolio.html" class="text-gray-300 hover:text-brand font-medium transition-colors" data-i18n="nav_portfolio">Portfolio</a>
+
+        <!-- Language Selector Desktop -->
+        <div class="relative" x-data="{ langOpen: false }">
+          <button @click="langOpen = !langOpen" @click.away="langOpen = false" 
+                  class="text-gray-300 hover:text-brand transition-colors p-2 flex items-center gap-2 text-sm font-medium">
+            <span x-text="currentLang === 'English' ? '🇺🇸' : currentLang === 'Spanish' ? '🇪🇸' : currentLang === 'French' ? '🇫🇷' : '🇩🇪'"></span>
+            <span x-text="currentLang" class="hidden lg:inline"></span>
+            <svg class="w-4 h-4 transition-transform" :class="langOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+          </button>
+          <div x-show="langOpen" 
+               x-transition:enter="transition ease-out duration-100"
+               x-transition:enter-start="opacity-0 scale-95"
+               x-transition:enter-end="opacity-100 scale-100"
+               style="display: none;"
+               class="absolute right-0 mt-2 w-36 bg-[#0c0f1a] border border-white/10 rounded-xl shadow-xl overflow-hidden z-50">
+            <template x-for="lang in ['English', 'Spanish', 'French', 'German']">
+              <button @click="currentLang = lang; langOpen = false" 
+                      class="w-full text-left px-4 py-2.5 text-xs text-gray-300 hover:bg-brand/10 hover:text-brand flex items-center gap-2 transition-colors">
+                <span x-text="lang === 'English' ? '🇺🇸' : lang === 'Spanish' ? '🇪🇸' : lang === 'French' ? '🇫🇷' : '🇩🇪'"></span>
+                <span x-text="lang"></span>
+              </button>
+            </template>
+          </div>
+        </div>
+
+        <!-- Theme Toggle Desktop -->
+        <button @click="isLight = !isLight" 
+                class="text-gray-300 hover:text-brand transition-colors p-2 flex items-center" 
+                title="Toggle Light/Dark Theme">
+          <svg x-show="!isLight" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+          <svg x-show="isLight" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+        </button>
+
+        <a href="contact.html" data-i18n="nav_get_started" class="bg-brand hover:shadow-[0_0_20px_rgba(0,184,173,0.3)] text-[#0c0f1a] px-6 py-2.5 rounded-full font-bold transition-all btn-pulse">Get Started</a>
+      </div>
+
+      <!-- Mobile Toggle -->
+      <div class="flex items-center md:hidden gap-4">
+        <button @click="isLight = !isLight" 
+                class="text-gray-300 p-2">
+          <svg x-show="!isLight" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+          <svg x-show="isLight" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+        </button>
+        <button @click="mobileMenuOpen = !mobileMenuOpen" class="text-gray-300 focus:outline-none">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path x-show="!mobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          <path x-show="mobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div x-show="mobileMenuOpen" 
+       x-transition:enter="transition ease-out duration-300"
+       x-transition:enter-start="opacity-0 -translate-y-4"
+       x-transition:enter-end="opacity-100 translate-y-0"
+       x-transition:leave="transition ease-in duration-200"
+       x-transition:leave-start="opacity-100 translate-y-0"
+       x-transition:leave-end="opacity-0 -translate-y-4"
+       style="display: none;"
+       class="md:hidden bg-[#0c0f1a]/95 backdrop-blur-md border-b border-white/10 px-6 py-8 space-y-6">
+    <a href="index.html" @click="mobileMenuOpen = false" class="block text-xl text-brand" data-i18n="nav_home">Home</a>
+    <a href="about.html" @click="mobileMenuOpen = false" class="block text-xl text-gray-300 hover:text-brand" data-i18n="nav_about">About</a>
+    <a href="services.html" @click="mobileMenuOpen = false" class="block text-xl text-gray-300 hover:text-brand" data-i18n="nav_services">Services</a>
+    <a href="portfolio.html" @click="mobileMenuOpen = false" class="block text-xl text-gray-300 hover:text-brand" data-i18n="nav_portfolio">Portfolio</a>
+    
+    <!-- Language Selection Mobile -->
+    <div class="pt-4 border-t border-white/10">
+      <p class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.15em] mb-4" data-i18n="lang_heading_small">Language</p>
+      <div class="grid grid-cols-2 gap-3">
+        <template x-for="lang in ['English', 'Spanish', 'French', 'German']">
+          <button @click="currentLang = lang" 
+                  :class="currentLang === lang ? 'border-brand text-brand bg-brand/5' : 'border-white/10 text-gray-400'"
+                  class="flex items-center justify-center gap-2 px-3 py-2.5 border rounded-xl text-xs font-bold transition-all">
+            <span x-text="lang === 'English' ? '🇺🇸' : lang === 'Spanish' ? '🇪🇸' : lang === 'French' ? '🇫🇷' : '🇩🇪'"></span>
+            <span x-text="lang"></span>
+          </button>
+        </template>
+      </div>
+    </div>
+
+    <a href="contact.html" @click="mobileMenuOpen = false" class="block bg-brand text-[#0c0f1a] px-6 py-4 rounded-xl font-bold text-center btn-pulse" data-i18n="nav_get_started">Get Started</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero" class="relative pt-32">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-pill">Digital Innovation · Benue, Nigeria</div>
+    <h1 class="hero-h1" data-i18n="hero_title">Building <em>Smart Digital</em> Solutions for Modern Businesses</h1>
+    <p class="hero-sub" data-i18n="hero_sub">Lexland Technologies helps businesses grow through professional websites, software development, branding, AI-powered solutions, and digital innovation.</p>
+    <div class="hero-btns">
+      <a href="contact.html" class="btn-primary btn-pulse" data-i18n="nav_get_started">Get Started</a>
+      <a href="contact.html" class="btn-outline" data-i18n="nav_contact">Contact Us</a>
+    </div>
+    <div class="hero-stats" x-data="{
+        stats: [
+          { current: 0, target: 30, label: 'stat_projects', suffix: '+' },
+          { current: 0, target: 100, label: 'stat_satisfaction', suffix: '%' },
+          { current: 0, target: 9, label: 'stat_core', suffix: '+' },
+          { current: 0, target: 24, label: 'stat_support', suffix: '/7' }
+        ]
+      }" x-init="stats.forEach(stat => {
+          let start = null;
+          const duration = 2000;
+          const animate = (timestamp) => {
+            if (!start) start = timestamp;
+            const progress = Math.min((timestamp - start) / duration, 1);
+            stat.current = Math.floor(progress * stat.target) + (progress === 1 ? (stat.suffix === '+' ? '+' : '') : ''); // Add suffix only at end for numbers
+            if (progress < 1) requestAnimationFrame(animate);
+          };
+          requestAnimationFrame(animate);
+      })">
+      <template x-for="stat in stats" :key="stat.label">
+        <div class="stat-item">
+          <div class="stat-num"><span x-text="stat.current"></span><span class="symbol" x-text="stat.suffix === '+' ? '+' : ''"></span></div>
+          <div class="stat-label" data-i18n="stat.label" x-text="translations[currentLang][stat.label]"></div>
+        </div>
+      </template>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about" class="py-24 bg-[#0c0f1a]">
+  <div class="about-wrap max-w-7xl mx-auto px-6">
+    <div class="about-text reveal">
+      <span class="section-label" data-i18n="about_label">About Us</span>
+      <h2 class="section-h2" data-i18n="about_title">A Team Built for <em>Digital Growth</em></h2>
+      <p class="section-p" data-i18n="about_p1">
+        Lexland Technologies Limited is a modern technology company founded by <strong class="text-brand">JOJI ALEXIS AONDONA</strong> and his dedicated team members.
+        We are dedicated to helping businesses build a strong digital presence through creativity, innovation, and reliable technology solutions.
+        The company was founded in 2022 and incorporated with the Corporate Affairs Commission in 2026.
+      </p>
+      <p class="section-p mt-4">
+        At Lexland Technologies Limited, we are proud to deliver world-class technology solutions to clients across the globe. 
+        Our services are provided worldwide and internationally, transcending borders to serve businesses in diverse markets and regions. 
+        Whether you are a startup in Europe, Asia, Australia, an enterprise in North America, or a growing company in Asia, 
+        we bring reliable, innovative,and scalable technology solutions tailored to your specific needs.
+      </p>
+      <p class="section-p mt-4">
+        Our global delivery model ensures seamless project execution, 24/7 support, and consistent quality regardless of time zone or location. 
+        With a strong international presence and a commitment to excellence, Lexland Technologies Limited is your trusted technology 
+        partner on the global stage, connecting innovation with opportunity worldwide.
+      </p>
+      <p class="section-p mt-4" data-i18n="about_p2">We provide reliable web development, software solutions, graphics design, Google Business Profile and Optimisation, branding, cyber security architecture, and digital support services tailored to meet modern business needs.</p>
+      <div class="mission-tag" data-i18n="mission_title">🎯 Our Mission</div>
+      <div class="mission-text" data-i18n="mission_text">To deliver innovative, affordable, and professional technology solutions, including cyber security architecture and digital support, that help businesses grow faster and operate smarter.</div>
+    </div>
+    <div class="about-visual reveal">
+      <div class="about-card">
+        <div class="about-icon-row">
+          <div class="about-icon-item"><span class="ic">🌐</span> Web Development</div>
+          <div class="about-icon-item"><span class="ic">🎨</span> Brand Design</div>
+          <div class="about-icon-item"><span class="ic">🤖</span> AI Solutions</div>
+          <div class="about-icon-item"><span class="ic">💻</span> Software Development</div>
+          <div class="about-icon-item"><span class="ic">🛡️</span> Cyber Security</div>
+          <div class="about-icon-item"><span class="ic">📱</span> Mobile-First</div>
+          <div class="about-icon-item"><span class="ic"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg" class="w-5 h-5" alt="Google Logo"></span> Google Business Profile and Optimisation</div>
+          <div class="about-icon-item"><span class="ic">🛠️</span> Tech Support</div>
+          <div class="about-icon-item"><span class="ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d4c8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/></svg></span> Android OS and iOS Support</div>
+        </div>
+      </div>
+      <div class="about-accent-box">
+        <strong>100%</strong>
+        <span>Client<br/>Satisfaction</span>
+      </div>
+    </div>
+  </div>
+    <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto mt-12">
+      <!-- Leader 1 -->
+      <div class="flip-card reveal founder-card">
+        <div class="flip-card-inner">
+          <div class="flip-card-front bg-white/5 p-8 border border-white/10 flex flex-col justify-center">
+            <h3 class="text-xl font-bold text-white flex items-center justify-center gap-1">
+              JOJI ALEXIS AONDONA
+              <svg class="w-5 h-5 text-brand verified-badge" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23,12L20.56,9.22L20.9,5.54L17.29,4.72L15.4,1.4L12,2.83L8.6,1.4L6.71,4.72L3.1,5.53L3.44,9.21L1,12L3.44,14.78L3.1,18.47L6.71,19.29L8.6,22.6L12,21.17L15.4,22.6L17.29,19.28L20.9,18.46L20.56,14.78L23,12M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9L10,17Z"/></svg>
+            </h3>
+            <p class="text-brand font-medium text-sm uppercase tracking-wider">Founder & CEO/CTO/COO</p>
+          </div>
+          <div class="flip-card-back">
+            <p class="text-gray-400 text-sm mb-6">Visionary leader focused on technical innovation and building professional digital architectures.</p>
+            <div class="flex justify-center gap-3">
+              <a href="https://www.linkedin.com/in/joji-alexis-aondona-a576b5220/" target="_blank" class="social-btn hover:!text-[#0A66C2] hover:!border-[#0A66C2]/30" title="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
+              <a href="https://github.com/Joji-Alexis-Aondona" target="_blank" class="social-btn hover:!text-white hover:!border-white/30" title="GitHub"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Leader 2 -->
+      <div class="flip-card reveal">
+        <div class="flip-card-inner">
+          <div class="flip-card-front bg-white/5 p-8 border border-white/10 flex flex-col justify-center">
+            <h3 class="text-xl font-bold text-white">Ubibi Godwin Ushahemba</h3>
+            <p class="text-brand font-medium text-sm uppercase tracking-wider">Unpaid intern</p>
+          </div>
+          <div class="flip-card-back">
+            <p class="text-gray-400 text-sm mb-6">Driving growth, strategy, and operational excellence across Lexland's diverse range of services.</p>
+          </div>
+        </div>
+      </div>
+      <!-- Leader 3 -->
+      <div class="flip-card reveal">
+        <div class="flip-card-inner">
+          <div class="flip-card-front bg-white/5 p-8 border border-white/10 flex flex-col justify-center">
+            <h3 class="text-xl font-bold text-white">Tortiv Abraham Aondohemba</h3>
+            <p class="text-brand font-medium text-sm uppercase tracking-wider">Unpaid Intern</p>
+          </div>
+          <div class="flip-card-back">
+            <p class="text-gray-400 text-sm mb-6">Dedicated leader focused on quality assurance and technical excellence across our portfolio.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- TEAM MEMBERS -->
+<section id="team" class="py-24 bg-[#0c0f1a]">
+  <div class="max-w-6xl mx-auto px-6 text-center">
+    <span class="section-label">Our Team</span>
+    <h2 class="section-h2">Meet Our <em>Interns and Partners</em></h2>
+    <p class="section-p mx-auto">Dedicated professionals driving our success and innovation.</p>
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto mt-12">
+      <div class="bg-white/5 p-8 rounded-2xl border border-white/10 hover:border-brand/50 transition-all reveal text-center flex flex-col h-full">
+        <h3 class="text-xl font-bold text-white">James Ker</h3>
+        <p class="text-brand font-medium mb-4 text-sm uppercase tracking-wider">Software Engineer</p>
+        <p class="text-gray-400 text-sm">Bringing expertise in backend development and system architecture to our projects.</p>
+      </div>
+      <div class="bg-white/5 p-8 rounded-2xl border border-white/10 hover:border-brand/50 transition-all reveal text-center flex flex-col h-full">
+        <h3 class="text-xl font-bold text-white">Alozie Johnkennedy</h3>
+        <p class="text-brand font-medium mb-4 text-sm uppercase tracking-wider">A Mobile & Web Developer.</p>
+        <p class="text-gray-400 text-sm">Crafting intuitive and engaging user experiences for all our digital solutions.</p>
+      </div>
+      <div class="bg-white/5 p-8 rounded-2xl border border-white/10 hover:border-brand/50 transition-all reveal text-center flex flex-col h-full">
+        <h3 class="text-xl font-bold text-white">Odukoya Samuel</h3>
+        <p class="text-brand font-medium mb-4 text-sm uppercase tracking-wider">Digital Solution Specialist/AI ML Engineer</p>
+        <p class="text-gray-400 text-sm">Creating impactful visual identities and branding strategies that resonate with global audiences.</p>
+      </div>
+      <div class="bg-white/5 p-8 rounded-2xl border border-white/10 hover:border-brand/50 transition-all reveal text-center flex flex-col h-full">
+        <h3 class="text-xl font-bold text-white">Faga Benedict Terkula</h3>
+        <p class="text-brand font-medium mb-4 text-sm uppercase tracking-wider">Security Expert & Network Administrator</p>
+        <p class="text-gray-400 text-sm">Specializing in cybersecurity and infrastructure management to keep digital environments safe and efficient.</p>
+      </div>
+      <div class="bg-white/5 p-8 rounded-2xl border border-white/10 hover:border-brand/50 transition-all reveal text-center flex flex-col h-full">
+        <h3 class="text-xl font-bold text-white">Emmanuel Ocheagwu</h3>
+        <p class="text-brand font-medium mb-4 text-sm uppercase tracking-wider">Front End Developer & Google Business Profile Expert</p>
+        <p class="text-gray-400 text-sm">Expert in building modern user interfaces and optimizing local business visibility.</p>
+      </div>
+      <div class="bg-white/5 p-8 rounded-2xl border border-white/10 hover:border-brand/50 transition-all reveal text-center flex flex-col h-full">
+        <h3 class="text-xl font-bold text-white">Kange Theophilus</h3>
+        <p class="text-brand font-medium mb-4 text-sm uppercase tracking-wider">Network Engineer</p>
+        <p class="text-gray-400 text-sm">Specializing in network infrastructure, ensuring robust and secure connectivity.</p>
+      </div>
+      <div class="bg-white/5 p-8 rounded-2xl border border-white/10 hover:border-brand/50 transition-all reveal text-center flex flex-col h-full">
+        <h3 class="text-xl font-bold text-white">Goldman Nicole & Dajoh Monalisa</h3>
+        <p class="text-brand font-medium mb-4 text-sm uppercase tracking-wider">Local SEO Specialist.</p>
+        <p class="text-gray-400 text-sm">Specializes in GBP creation to enhance local visibility.</p>
+      </div>
+      <div class="bg-white/5 p-8 rounded-2xl border border-white/10 hover:border-brand/50 transition-all reveal text-center flex flex-col h-full">
+        <h3 class="text-xl font-bold text-white">Achagh Emmanuel</h3>
+        <p class="text-brand font-medium mb-4 text-sm uppercase tracking-wider">Full Stack Developer & UI/UX</p>
+        <p class="text-gray-400 text-sm">Expert in building complete web solutions with a strong focus on user-centric design.</p>
+      </div>
+      <div class="bg-white/5 p-8 rounded-2xl border border-white/10 hover:border-brand/50 transition-all reveal text-center flex flex-col h-full">
+        <h3 class="text-xl font-bold text-white">Tileshima Neer</h3>
+        <p class="text-brand font-medium mb-4 text-sm uppercase tracking-wider">Creative Multimedia Specialist</p>
+        <p class="text-gray-400 text-sm">Bringing innovative multimedia design and content creation to life.</p>
+      </div>
+      <div class="bg-white/5 p-8 rounded-2xl border border-white/10 hover:border-brand/50 transition-all reveal text-center flex flex-col h-full">
+        <h3 class="text-xl font-bold text-white">Tersue Agev</h3>
+        <p class="text-brand font-medium mb-4 text-sm uppercase tracking-wider">Front-End Developer/Product Tester</p>
+        <p class="text-gray-400 text-sm">Bringing innovative web solutions to life with a focus on user experience and performance.</p>
+      </div>
+      <div class="bg-white/5 p-8 rounded-2xl border border-white/10 hover:border-brand/50 transition-all reveal text-center flex flex-col h-full">
+        <h3 class="text-xl font-bold text-white">Isaac Ahor</h3>
+        <p class="text-brand font-medium mb-4 text-sm uppercase tracking-wider">Snr. Full-stack, Software Engineer & AI Engineer</p>
+        <p class="text-gray-400 text-sm">Expert in building scalable full-stack applications and implementing advanced AI solutions.</p>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- SERVICES -->
+<section id="services" class="py-24 bg-[#0c0f1a]">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="services-head reveal text-center mb-16">
+      <span class="section-label">What We Do</span>
+      <h2 class="section-h2">Our <em>Services</em></h2>
+      <p class="section-p mx-auto">Professional digital solutions crafted to elevate your business and organization - from concept to launch and beyond.</p>
+    </div>
+    <div class="services-grid text-left">
+      <div class="svc-card reveal">
+        <div class="svc-icon">🌐</div>
+        <div class="svc-title">Website Development</div>
+        <p class="svc-desc">We design responsive and professional websites for businesses, brands, and organizations that look great on every screen.</p>
+      </div>
+      <div class="svc-card reveal">
+        <div class="svc-icon">🚀</div>
+        <div class="svc-title">Landing Page Design</div>
+        <p class="svc-desc">High-converting landing pages built to attract leads, customers, and sales with compelling design and sharp copywriting.</p>
+      </div>
+      <div class="svc-card reveal">
+        <div class="svc-icon">🎨</div>
+        <div class="svc-title">Graphics Design</div>
+        <p class="svc-desc">Creative branding materials including logos, flyers, banners, and social media designs that make your brand stand out.</p>
+      </div>
+      <div class="svc-card reveal">
+        <div class="svc-icon">💻</div>
+        <div class="svc-title">Software Development</div>
+        <p class="svc-desc">Custom software and web applications tailored to your business operations — built for scale and performance.</p>
+      </div>
+      <div class="svc-card reveal">
+        <div class="svc-icon">🤖</div>
+        <div class="svc-title">AI Solutions</div>
+        <p class="svc-desc">We help businesses integrate AI tools and automation into their workflow to save time and boost productivity.</p>
+      </div>
+      <div class="svc-card reveal">
+        <div class="svc-icon">🛡️</div>
+        <div class="svc-title">Cyber Security</div>
+        <p class="svc-desc">Protecting your digital assets with advanced security measures, threat detection, and robust defense strategies.</p>
+      </div>
+      <div class="svc-card reveal">
+        <div class="svc-icon">🛠️</div>
+        <div class="svc-title">Technical Support</div>
+        <p class="svc-desc">Reliable digital support and maintenance services for websites and systems — keeping everything running smoothly.</p>
+      </div>
+      <div class="svc-card reveal">
+        <div class="svc-icon">📍</div>
+        <div class="svc-title">Google Business Profile</div>
+        <p class="svc-desc">Professional Google Business Profile creation and optimisation, making your business appear on Google Maps.</p>
+      </div>
+      <div class="svc-card reveal">
+        <div class="svc-icon">📱</div>
+        <div class="svc-title">Mobile Support</div>
+        <p class="svc-desc">Expert support and optimization for mobile operating systems, ensuring peak performance across all devices.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TECH STACK -->
+<section id="tech" class="py-24 bg-white/5">
+  <div class="max-w-6xl mx-auto px-6 text-center">
+    <span class="section-label" data-i18n="tech_stack_label">Our Tech Stack</span>
+    <h2 class="section-h2" data-i18n="tech_stack_title">Powered by <em>Modern Frameworks</em></h2>
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-8 mt-12 opacity-60" x-data="{ stagger: 50 }">
+      <div class="flex flex-col items-center gap-3 reveal" :style="'transition-delay: ' + (0 * stagger) + 'ms'">
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" class="w-12 h-12" alt="HTML5" />
+        <span class="text-xs font-semibold text-white uppercase tracking-widest">HTML5</span>
+      </div>
+      <div class="flex flex-col items-center gap-3 reveal" :style="'transition-delay: ' + (1 * stagger) + 'ms'">
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" class="w-12 h-12" alt="CSS3" />
+        <span class="text-xs font-semibold text-white uppercase tracking-widest">CSS3</span>
+      </div>
+      <div class="flex flex-col items-center gap-3 reveal" :style="'transition-delay: ' + (2 * stagger) + 'ms'">
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" class="w-12 h-12" alt="JavaScript" />
+        <span class="text-xs font-semibold text-white uppercase tracking-widest">JavaScript</span>
+      </div>
+      <div class="flex flex-col items-center gap-3 reveal" :style="'transition-delay: ' + (3 * stagger) + 'ms'">
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" class="w-12 h-12" alt="React" />
+        <span class="text-xs font-semibold text-white uppercase tracking-widest">React</span>
+      </div>
+      <div class="flex flex-col items-center gap-3 reveal" :style="'transition-delay: ' + (4 * stagger) + 'ms'">
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" class="w-12 h-12" alt="Node.js" />
+        <span class="text-xs font-semibold text-white uppercase tracking-widest">Node.js</span>
+      </div>
+      <div class="flex flex-col items-center gap-3 reveal" :style="'transition-delay: ' + (5 * stagger) + 'ms'">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/d/d5/Tailwind_CSS_Logo.svg" class="w-12 h-12" alt="Tailwind" />
+        <span class="text-xs font-semibold text-white uppercase tracking-widest">Tailwind</span>
+      </div>
+      <div class="flex flex-col items-center gap-3 reveal" :style="'transition-delay: ' + (6 * stagger) + 'ms'">
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg" class="w-12 h-12" alt="PHP" />
+        <span class="text-xs font-semibold text-white uppercase tracking-widest">PHP</span>
+      </div>
+      <div class="flex flex-col items-center gap-3 reveal" :style="'transition-delay: ' + (7 * stagger) + 'ms'">
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" class="w-12 h-12" alt="Python" />
+        <span class="text-xs font-semibold text-white uppercase tracking-widest">Python</span>
+      </div>
+      <div class="flex flex-col items-center gap-3 reveal" :style="'transition-delay: ' + (8 * stagger) + 'ms'">
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg" class="w-12 h-12" alt="MongoDB" />
+        <span class="text-xs font-semibold text-white uppercase tracking-widest">MongoDB</span>
+      </div>
+      <div class="flex flex-col items-center gap-3 reveal" :style="'transition-delay: ' + (9 * stagger) + 'ms'">
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg" class="w-12 h-12" alt="MySQL" />
+        <span class="text-xs font-semibold text-white uppercase tracking-widest">MySQL</span>
+      </div>
+      <div class="flex flex-col items-center gap-3 reveal" :style="'transition-delay: ' + (10 * stagger) + 'ms'">
+        <div class="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center">
+            <span class="font-bold text-teal-400 text-xl">A</span>
+        </div>
+        <span class="text-xs font-semibold text-white uppercase tracking-widest">Alpine.js</span>
+      </div>
+      <div class="flex flex-col items-center gap-3 reveal" :style="'transition-delay: ' + (11 * stagger) + 'ms'">
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/android/android-original.svg" class="w-12 h-12" alt="Android" />
+        <span class="text-xs font-semibold text-white uppercase tracking-widest">Android</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY CHOOSE US -->
+<section id="why" class="py-24">
+  <div class="why-wrap max-w-7xl mx-auto px-6">
+    <div class="reveal">
+      <span class="section-label" data-i18n="why_label">Why Us</span>
+      <h2 class="section-h2" data-i18n="why_title">Why Choose <em>Lexland</em>?</h2>
+      <p class="section-p" data-i18n="why_sub">We combine technical excellence, creativity, and business sense to deliver results that matter.</p>
+      <ul class="why-list mt-8">
+        <li><span class="check">✓</span> <span data-i18n="why_item1">Professional & modern designs</span></li>
+        <li><span class="check">✓</span> <span data-i18n="why_item2">Affordable pricing</span></li>
+        <li><span class="check">✓</span> <span data-i18n="why_item3">Fast project delivery</span></li>
+        <li><span class="check">✓</span> <span data-i18n="why_item4">Reliable customer support</span></li>
+        <li><span class="check">✓</span> <span data-i18n="why_item5">Mobile-friendly websites</span></li>
+        <li><span class="check">✓</span> <span data-i18n="why_item6">Business-focused solutions</span></li>
+        <li><span class="check">✓</span> <span data-i18n="why_item7">Innovative technology</span></li>
+        <li><span class="check">✓</span> <span data-i18n="why_item8">Scalable architecture</span></li>
+        <li><span class="check">✓</span> <span data-i18n="why_item9">Google Business Profile and Optimisation</span></li>
+        <li><span class="check">✓</span> <span data-i18n="why_item10">Advanced Cyber Security</span></li>
+      </ul>
+    </div>
+    <div class="why-visual reveal">
+      <div class="why-vcard">
+        <div class="big">30+</div>
+        <div class="lbl" data-i18n="why_stat1_label">Projects Done</div>
+      </div>
+      <div class="why-vcard gold">
+        <div class="big">5★</div>
+        <div class="lbl" data-i18n="why_stat2_label">Client Rating</div>
+      </div>
+      <div class="why-vcard gold">
+        <div class="big">24/7</div>
+        <div class="lbl" data-i18n="why_stat3_label">Support</div>
+      </div>
+      <div class="why-vcard">
+        <div class="big">100%</div>
+        <div class="lbl" data-i18n="why_stat4_label">Satisfaction</div>
+      </div>
+      <div class="testi-card reveal">
+        <p class="testi-text" data-i18n="testi_4_text">"Lexland Technologies graphics for my business were awesome. Thanks for the services."</p>
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-avatar">
+          <div class="avatar-circle">GM</div>
+          <div class="avatar-name">
+            <div class="text-white font-bold">Graig Maxey</div>
+            <div class="text-xs" data-i18n="testi_4_role">Business Client</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal">
+        <p class="testi-text" data-i18n="testi_5_text">"Lexland Technologies, we the Lagos State Corps Members are grateful for your tremendous service."</p>
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-avatar">
+          <div class="avatar-circle">NACC</div>
+          <div class="avatar-name">
+            <div class="text-white font-bold">National Association of Catholic Corps Members</div>
+            <div class="text-xs" data-i18n="testi_5_role">Client</div>
+            <a href="https://share.google/STxbhiTvc5XueAFsa" target="_blank" rel="noopener noreferrer" class="text-[10px] text-brand hover:underline block mt-1">share.google/STxbhiTvc5XueAFsa</a>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal">
+        <p class="testi-text" data-i18n="testi_6_text">"Their communication, speed, and design quality were excellent throughout the entire project. Smooth experience from start to finish."</p>
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-avatar">
+          <div class="avatar-circle">ZIR</div>
+          <div class="avatar-name">
+            <div class="text-white font-bold">Zaanana Ibuver Robert</div>
+            <div class="text-xs" data-i18n="testi_6_role">Startup Founder</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal">
+        <p class="testi-text" data-i18n="testi_7_text">"Very reliable team with strong technical knowledge. They understood exactly what I needed and delivered beyond expectations."</p>
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-avatar">
+          <div class="avatar-circle">MB</div>
+          <div class="avatar-name">
+            <div class="text-white font-bold">Mtem Blessing</div>
+            <div class="text-xs" data-i18n="testi_7_role">Brand Owner</div>
+            <a href="https://mabs-deli-kitchens-fast-food-com.netlify.app" target="_blank" rel="noopener noreferrer" class="text-[10px] text-brand hover:underline block mt-1">mabs-deli-kitchens-fast-food-com.netlify.app</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PORTFOLIO -->
+<section id="portfolio" class="py-24 bg-[#0c0f1a]">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="portfolio-head reveal text-center mb-16">
+      <span class="section-label">Our Work</span>
+      <h2 class="section-h2">Recent <em>Projects</em></h2>
+      <p class="section-p mx-auto">A selection of our latest work across web development, branding, and digital solutions.</p>
+    </div>
+    <div class="portfolio-grid">
+      <a href="https://mabs-deli-kitchens-fast-food-com.netlify.app" target="_blank" class="port-card reveal block">
+        <div class="port-thumb pt-2">🚀</div>
+        <div class="port-body">
+          <div class="port-title">Mabs Deli Kitchens</div>
+          <div class="port-tag">Web Application · Fast Food</div>
+        </div>
+      </a>
+      <a href="https://orbunde-scholars-academy-aliade.netlify.app" target="_blank" class="port-card reveal block">
+        <div class="port-thumb pt-2">🏢</div>
+        <div class="port-body">
+          <div class="port-title">Orbunde Scholars Academy</div>
+          <div class="port-tag">School Website · Portal</div>
+        </div>
+      </a>
+      <a href="https://st-chrysostom-schools-lagos.netlify.app" target="_blank" class="port-card reveal block">
+        <div class="port-thumb pt-2">🏫</div>
+        <div class="port-body">
+          <div class="port-title" data-i18n="port_chrysostom_title">St. Chrysostom Schools</div>
+          <div class="port-tag">School Website · Lagos</div>
+        </div>
+      </a>
+      <a href="https://maps.app.goo.gl/7dLCxJY9XtdeZMuu7?g_st=aw" target="_blank" class="port-card reveal block">
+        <div class="port-thumb pt-2">📍</div>
+        <div class="port-body">
+          <div class="port-title">Orbunde Scholars Academy</div>
+          <div class="port-tag">Google Maps · SEO</div>
+        </div>
+      </a>
+      <a href="https://share.google/56S6DKMe2AYWBtlA8" target="_blank" class="port-card reveal block">
+        <div class="port-thumb pt-2">📍</div>
+        <div class="port-body">
+          <div class="port-title">Brainz Enterprises</div>
+          <div class="port-tag">Google Maps · SEO</div>
+        </div>
+      </a>
+      <a href="https://main.d12ofmhfddk7hp.amplifyapp.com/" target="_blank" class="port-card reveal block">
+        <div class="port-thumb pt-2">💻</div>
+        <div class="port-body">
+          <div class="port-title">NACC Portal</div>
+          <div class="port-tag">Web Portal · Education</div>
+        </div>
+      </a>
+      <a href="https://st-chrysostom-schools-lagos.netlify.app" target="_blank" class="port-card reveal block">
+        <div class="port-thumb pt-2">🏫</div>
+        <div class="port-body">
+          <div class="port-title" data-i18n="port_chrysostom_title">St. Chrysostom Schools</div>
+          <div class="port-tag">School Website · Lagos</div>
+        </div>
+      </a>
+      <a href="https://share.google/STxbhiTvc5XueAFsa" target="_blank" class="port-card reveal block">
+        <div class="port-thumb pt-2">📍</div>
+        <div class="port-body">
+          <div class="port-title">NACC Lagos</div>
+          <div class="port-tag">Google Maps · SEO</div>
+        </div>
+      </a>
+      <a href="https://lifegatechristiancenter.netlify.app/" target="_blank" class="port-card reveal block">
+        <div class="port-thumb pt-2">⛪</div>
+        <div class="port-body">
+          <div class="port-title">Lifegate Christian Center</div>
+          <div class="port-tag">Church Website · Ministry</div>
+        </div>
+      </a>
+      <a href="https://share.google/L398tz4fvwqFZHNqH" target="_blank" class="port-card reveal block">
+        <div class="port-thumb pt-2">📍</div>
+        <div class="port-body">
+          <div class="port-title">AVF Calador SL</div>
+          <div class="port-tag">Google Maps · SEO</div>
+        </div>
+      </a>
+      <a href="https://www.avf-calador.com" target="_blank" class="port-card reveal block">
+        <div class="port-thumb pt-2">🌐</div>
+        <div class="port-body">
+          <div class="port-title">AVF Calador SL</div>
+          <div class="port-tag">Business Website · Spain</div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+<!-- TESTIMONIALS -->
+<section id="testimonials">
+  <div class="max-w-7xl mx-auto px-6 py-24">
+    <div class="testi-head reveal text-center mb-16">
+      <span class="section-label">Testimonials</span>
+      <h2 class="section-h2">What Our <em>Clients Say</em></h2>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-card reveal">
+        <p class="testi-text" data-i18n="testi_1_text">"Lexland Technologies delivered a clean and professional website for my business. The quality exceeded my expectations,highly recommended."</p>
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-avatar">
+          <div class="avatar-circle">TAA</div>
+          <div class="avatar-name">
+            <div class="text-white font-bold">Tortiv Aondohemba Abraham</div>
+            <div class="text-xs" data-i18n="testi_1_role">Business Client</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal">
+        <p class="testi-text" data-i18n="testi_2_text">"Lexland Technologies delivered a clean and professional website for my School. The quality exceeded my expectations."</p>
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-avatar">
+          <div class="avatar-circle">OBJ</div>
+          <div class="avatar-name">
+            <div class="text-white font-bold">Orbunde Luamo Jacob</div>
+            <div class="text-xs" data-i18n="testi_2_role">School Owner</div>
+            <a href="https://orbunde-scholars-academy-aliade.netlify.app" target="_blank" rel="noopener noreferrer" class="text-[10px] text-brand hover:underline block mt-1">orbunde-scholars-academy-aliade.netlify.app</a>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal">
+        <p class="testi-text" data-i18n="testi_3_text">"Lexland Technologies placed my business on Google Maps to enhance my online presence. The services were excellent . I am sincerely appreciative of their work."</p>
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-avatar">
+          <div class="avatar-circle">BE</div>
+          <div class="avatar-name">
+            <div class="text-white font-bold">Brainz Enterprises</div>
+            <div class="text-xs" data-i18n="testi_3_role">Business Owner</div>
+            <a href="https://share.google/56S6DKMe2AYWBtlA8" target="_blank" rel="noopener noreferrer" class="text-[10px] text-brand hover:underline block mt-1">share.google/56S6DKMe2AYWBtlA8</a>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal">
+        <p class="testi-text" data-i18n="testi_4_text">"Lexland Technologies graphics for my business were awesome. Thanks for the services."</p>
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-avatar">
+          <div class="avatar-circle">GM</div>
+          <div class="avatar-name">
+            <div class="text-white font-bold">Graig Maxey</div>
+            <div class="text-xs" data-i18n="testi_4_role">Business Client</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal">
+        <p class="testi-text" data-i18n="testi_5_text">"Lexland Technologies, we the Lagos State Corps Members are grateful for your tremendous service."</p>
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-avatar">
+          <div class="avatar-circle">NACC</div>
+          <div class="avatar-name">
+            <div class="text-white font-bold">National Association of Catholic Corps Members</div>
+            <div class="text-xs" data-i18n="testi_5_role">Client</div>
+            <a href="https://share.google/STxbhiTvc5XueAFsa" target="_blank" rel="noopener noreferrer" class="text-[10px] text-brand hover:underline block mt-1">share.google/STxbhiTvc5XueAFsa</a>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal">
+        <p class="testi-text" data-i18n="testi_6_text">"Their communication, speed, and design quality were excellent throughout the entire project. Smooth experience from start to finish."</p>
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-avatar">
+          <div class="avatar-circle">ZIR</div>
+          <div class="avatar-name">
+            <div class="text-white font-bold">Zaanana Ibuver Robert</div>
+            <div class="text-xs" data-i18n="testi_6_role">Startup Founder</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal">
+        <p class="testi-text" data-i18n="testi_7_text">"Very reliable team with strong technical knowledge. They understood exactly what I needed and delivered beyond expectations."</p>
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-avatar">
+          <div class="avatar-circle">MB</div>
+          <div class="avatar-name">
+            <div class="text-white font-bold">Mtem Blessing</div>
+            <div class="text-xs" data-i18n="testi_7_role">Brand Owner</div>
+            <a href="https://mabs-deli-kitchens-fast-food-com.netlify.app" target="_blank" rel="noopener noreferrer" class="text-[10px] text-brand hover:underline block mt-1">mabs-deli-kitchens-fast-food-com.netlify.app</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="py-24 bg-white/5">
+  <div class="contact-wrap max-w-7xl mx-auto px-6">
+    <div class="reveal">
+      <span class="section-label">Get In Touch</span>
+      <h2 class="section-h2">Ready to <em>Grow</em> Your Business?</h2>
+      <p class="section-p">Reach out today and let's discuss how Lexland Technologies can help you build a stronger digital presence.</p>
+
+      <div class="mt-12 space-y-6">
+        <div class="contact-info-item">
+          <div class="contact-icon">✉️</div>
+          <div>
+            <div class="contact-label">Email</div>
+            <div class="contact-val"><a href="mailto:lexlandtec@gmail.com" class="text-brand hover:underline">lexlandtec@gmail.com</a></div>
+          </div>
+        </div>
+        <div class="contact-info-item">
+          <div class="contact-icon">📞</div>
+          <div>
+            <div class="contact-label" data-i18n="contact_phone">Phone</div>
+            <div class="contact-val"><a href="tel:+2348135555877" class="hover:text-brand transition-colors">+234 8135555877</a></div>
+          </div>
+        </div>
+        <div class="contact-info-item">
+          <div class="contact-icon">📍</div>
+          <div>
+            <div class="contact-label">Location</div>
+            <div class="contact-val">Benue, Nigeria</div>
+          </div>
+        </div>
+        <div class="contact-info-item">
+          <div class="contact-icon">🏢</div>
+          <div>
+            <div class="contact-label">Company Registration (RC)</div>
+            <div class="contact-val text-red-600 font-bold">9491027</div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-10 flex gap-4">
+        <a class="social-btn !text-[#1877F2] !border-[#1877F2]/30 hover:!bg-[#1877F2]/10" href="https://facebook.com" title="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></a>
+        <a class="social-btn !text-[#E4405F] !border-[#E4405F]/30 hover:!bg-[#E4405F]/10" href="#" title="Instagram"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
+        <a class="social-btn !text-[#0A66C2] !border-[#0A66C2]/30 hover:!bg-[#0A66C2]/10" href="#" title="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
+        <a class="social-btn !text-[#25D366] !border-[#25D366]/30 hover:!bg-[#25D366]/10" href="https://wa.me/2348135555877" title="WhatsApp"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg></a>
+      </div>
+    </div>
+
+    <form class="contact-form reveal" 
+          x-data="{ 
+            status: 'Send Message', 
+            showSuccess: false,
+            submit() {
+              this.status = 'Sending...';
+              fetch('send-email.php', { method: 'POST', body: new FormData(this.$el) })
+              .then(res => {
+                if(res.ok) { 
+                  this.showSuccess = true; 
+                  this.status = 'Message Sent ✓'; 
+                  this.$el.reset(); 
+                }
+                else { this.status = 'Error! Try again'; }
+                setTimeout(() => { this.status = 'Send Message'; }, 3000);
+              }).catch(() => { this.status = 'Network Error'; setTimeout(() => { this.status = 'Send Message'; }, 3000); });
+            }
+          }" @submit.prevent="submit">
+      <!-- Success Popup -->
+      <template x-teleport="body">
+        <div x-show="showSuccess" 
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 scale-90"
+             x-transition:enter-end="opacity-100 scale-100"
+             class="fixed inset-0 z-[100] flex items-center justify-center px-4 bg-[#0c0f1a]/80 backdrop-blur-sm"
+             style="display: none;">
+          <div class="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl">
+            <div class="w-20 h-20 bg-brand/10 text-brand rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">✓</div>
+            <h3 class="text-2xl font-bold text-[#0c0f1a] mb-2" data-i18n="success_title">Success!</h3>
+            <p class="text-gray-600 mb-8" data-i18n="success_msg">Thank you for reaching out. We have received your quote request and will contact you shortly.</p>
+            <button type="button" @click="showSuccess = false" class="w-full bg-brand text-[#0c0f1a] py-4 rounded-xl font-bold hover:shadow-lg transition-all" data-i18n="success_btn">Great, thanks!</button>
+          </div>
+        </div>
+      </template>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" name="name" placeholder="John Doe" required />
+        </div>
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" name="email" placeholder="john@example.com" required />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="tel" name="phone" placeholder="+234 800 000 0000" />
+        </div>
+        <div class="form-group">
+          <label>Service Needed</label>
+          <select name="service">
+            <option value="">Select a service…</option>
+            <option>Website Development</option>
+            <option>Landing Page Design</option>
+            <option>Graphics Design</option>
+            <option>Software Development</option>
+            <option>AI Solutions</option>
+            <option>Cyber Security</option>
+            <option>Google Business Profile and Optimisation</option>
+            <option>Technical Support</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Message</label>
+        <textarea name="message" placeholder="Tell us about your project…" required></textarea>
+      </div>
+      <button type="submit" class="btn-submit" x-text="status"></button>
+    </form>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="bg-[#0c0f1a] border-t border-white/10 pt-20 pb-10">
+  <div class="footer-grid max-w-7xl mx-auto px-6">
+    <div class="footer-brand">
+      <a href="Index.html" class="flex flex-col leading-tight flex-shrink-0 group">
+        <span class="text-xl font-extrabold text-white tracking-tighter">
+          LEX<span class="text-brand">LAND</span>
+        </span>
+        <span class="text-[10px] font-bold text-brand tracking-[0.15em] uppercase transition-colors group-hover:text-white">
+          Technologies Limited
+        </span>
+      </a>
+      <p>Building smart digital solutions for modern businesses across Nigeria and beyond.</p>
+      <div class="footer-social">
+        <a class="social-btn !text-[#1877F2] !border-[#1877F2]/30 hover:!bg-[#1877F2]/10" href="https://facebook.com" title="Facebook">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+        </a>
+        <a class="social-btn !text-[#E4405F] !border-[#E4405F]/30 hover:!bg-[#E4405F]/10" href="#" title="Instagram">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+        </a>
+        <a class="social-btn !text-[#0A66C2] !border-[#0A66C2]/30 hover:!bg-[#0A66C2]/10" href="#" title="LinkedIn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+        </a>
+        <a class="social-btn !text-[#25D366] !border-[#25D366]/30 hover:!bg-[#25D366]/10" href="https://wa.me/2348135555877" title="WhatsApp">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+        </a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="Index.html">Home</a></li>
+        <li><a href="About.html">About</a></li>
+        <li><a href="Services.html">Services</a></li>
+        <li><a href="Portfolio.html">Portfolio</a></li>
+        <li><a href="Contact.html">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Services</h4>
+      <ul>
+        <li><a href="Services.html">Website Development</a></li>
+        <li><a href="Services.html">Landing Pages</a></li>
+        <li><a href="Services.html">Graphics Design</a></li>
+        <li><a href="Services.html">Software Development</a></li>
+        <li><a href="Services.html">AI Solutions</a></li>
+        <li><a href="Services.html">Cyber Security</a></li>
+        <li><a href="Services.html">Google Business Profile and Optimisation</a></li>
+        <li><a href="Services.html">Technical Support</a></li>
+        <li><a href="Services.html">Android OS and iOS Support</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 <span class="text-red-600 font-bold">Lexland Technologies Limited (CAC Registration Number: 9491027)</span>. All rights reserved.</p>
+    <p>Developed by <span class="text-red-600 font-bold">JOJI ALEXIS AONDONA</span> in <a href="#">Benue, Nigeria</a></p>
+  </div>
+</footer>
+
+<a class="wa-float" href="https://wa.me/2348135555877" target="_blank" title="Chat on WhatsApp">
+  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="white">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+  <span class="wa-badge">1</span>
+</a>
+
+<script>
+  const observerOptions = { threshold: 0.1 };
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, observerOptions);
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
