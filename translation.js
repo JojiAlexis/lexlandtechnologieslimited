@@ -611,4 +611,3 @@ document.addEventListener('DOMContentLoaded', () => {
             translatePage(event.target.value);
         });
     }
-});
